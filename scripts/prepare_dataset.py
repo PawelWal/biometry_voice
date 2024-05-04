@@ -108,7 +108,7 @@ def prepare_datasets(
 @click.option("--ds_name", default="test_aac", help="Dataset name")
 @click.option("--train_ratio", default=0.6, help="Train ratio")
 @click.option("--dev_ratio", default=0.2, help="Dev ratio")
-@click.option("--max_user_files", default=10, help="Max files per user")
+@click.option("--max_user_files", default=15, help="Max files per user")
 def main(
     test_new_users=10,
     ds_name="test_aac",
