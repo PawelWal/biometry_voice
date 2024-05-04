@@ -22,7 +22,7 @@ def build_representation_wespeaker(
 ):
     resp_objs = []
     if verbose:
-        for audio in tqdm(audio_list):
+        for audio in tqdm(audio_list, desc="Extracting embeddings"):
             vector = model.extract_embedding(audio)
             if len(vector) < 512:
                 resp_objs.append(vector[0])
@@ -35,5 +35,5 @@ def build_representation_wespeaker(
                 resp_objs.append(vector[0])
             else:
                 resp_objs.append(vector)
-    vectors = [resp_obj["embedding"] for resp_obj in resp_objs]
+    vectors = [resp_obj for resp_obj in resp_objs]
     return vectors
