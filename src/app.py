@@ -55,7 +55,6 @@ class VoiceVer:
         assert np.array(X_rep).shape[0] == np.array(y).shape[0]
         self.__train(X_rep, y)
         self.is_training = False
-        print("Training done")
 
     def __train(self, X_rep, y):
         clf_class = getattr(
