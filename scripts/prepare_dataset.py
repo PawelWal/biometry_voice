@@ -24,19 +24,21 @@ def prepare_datasets(
 ):
     dataset_dir=f"{BASE_DIR}/{ds_name}"
     dest_train = f"{SAVE_DIR}/train"
-    dest_test = f"{SAVE_DIR}/test"
-    dest_dev = f"{SAVE_DIR}/dev" # for modyfication
+    dest_test = f"{SAVE_DIR}/test_known"
+    dest_dev = f"{SAVE_DIR}/dev_known" # for modyfication
+    dest_dev_unknown = f"{SAVE_DIR}/dev_unknown"
+    dest_test_unknown = f"{SAVE_DIR}/test_unknown"
     os.makedirs(dest_train, exist_ok=True)
     os.makedirs(dest_test, exist_ok=True)
     os.makedirs(dest_dev, exist_ok=True)
 
 
     cls = os.listdir(dataset_dir)
-    to_test_new = cls[:test_new_users]
+    to_test_new = cls[:test_new_users*2]
     to_train = cls[test_new_users:]
     to_test = cls[test_new_users:]
     train_cls_mapping = {}
-    sizes = {"train": 0, "test": 0, "test_new": 0, "dev": 0}
+    sizes = {"train": 0, "test": 0, "test_unknown": 0, "dev": 0, "dev_unknown": 0}
     print(f"Train: {len(to_train)}, test: {len(to_test)}, test_new: {len(to_test_new)}")
     i = 0
     for user in os.listdir(dataset_dir):
@@ -44,14 +46,27 @@ def prepare_datasets(
         for dir in os.listdir(f"{dataset_dir}/{user}"):
             for file in os.listdir(f"{dataset_dir}/{user}/{dir}"):
                 files.append(f"{dataset_dir}/{user}/{dir}/{file}")
+
         if user in to_test_new:
-            os.makedirs(f"{dest_test}/{i}", exist_ok=True)
-            for j, file in enumerate(files):
-                file_name = file.split("/")[-1]
-                shutil.copy(file, f"{dest_test}/{i}/{file_name}")
-            train_cls_mapping[user] = i
-            i += 1
-            sizes["test_new"] += len(files)
+            if user in to_test_new[:test_new_users]:
+                os.makedirs(f"{dest_test_unknown}/{i}", exist_ok=True)
+                for j, file in enumerate(files):
+                    if j >= max_user_files:
+                        break
+                    file_name = file.split("/")[-1]
+                    shutil.copy(file, f"{dest_test}/{i}/{file_name}")
+                    sizes["test_unknown"] += 1
+                train_cls_mapping[user] = i
+                i += 1
+            else: # dev unknown
+                os.makedirs(f"{dest_dev_unknown}/{i}", exist_ok=True)
+                for j, file in enumerate(files):
+                    if j >= max_user_files:
+                        break
+                    file_name = file.split("/")[-1]
+                    shutil.copy(file, f"{dest_dev_unknown}/{i}/{file_name}")
+                    sizes["dev_unknown"] += 1
+                i += 1
         else:
             # split
             train_files, test_files = train_test_split(files, test_size=1-train_ratio)
