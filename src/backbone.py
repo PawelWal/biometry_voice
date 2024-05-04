@@ -36,4 +36,5 @@ def build_representation_wespeaker(
                 print("vector invalid shape", vector.shape)
             else:
                 vectors.append(vector)
+    vectors = [np.array(vector) for vector in vectors]
     return vectors
