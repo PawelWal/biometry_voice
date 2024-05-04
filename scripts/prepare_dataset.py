@@ -40,7 +40,8 @@ def prepare_datasets(
     for user in os.listdir(dataset_dir):
         files = []
         for dir in os.listdir(f"{dataset_dir}/{user}"):
-            files.extend(os.listdir(f"{dataset_dir}/{user}/{dir}"))
+            for file in os.listdir(f"{dataset_dir}/{user}/{dir}"):
+                files.append(f"{dataset_dir}/{user}/{dir}/{file}")
         if user in to_test_new:
             os.makedirs(f"{dest_test}/{i}", exist_ok=True)
             for j, file in enumerate(files):
