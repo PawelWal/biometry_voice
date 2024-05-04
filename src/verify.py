@@ -6,6 +6,7 @@ from math import ceil
 import matplotlib.pyplot as plt
 import json
 import numpy as np
+from tqdm import tqdm
 
 
 def count_metrics(
@@ -22,13 +23,13 @@ def count_metrics(
     classifier = app.classifier_name
     name = name if test_dir_unknown is not None else f"{name}_unknown_excluded"
     print(f"Testing {name} directory...")
-    for cls in os.listdir(test_dir):
+    for cls in tqdm(os.listdir(test_dir), desc="test known"):
         for img in os.listdir(os.path.join(test_dir, cls)):
             y_test.append(int(cls))
             X_test.append(os.path.join(test_dir, cls, img))
 
     if test_dir_unknown is not None:
-        for cls in os.listdir(test_dir_unknown):
+        for cls in tqdm(os.listdir(test_dir_unknown), desc="test unknown"):
             for img in os.listdir(os.path.join(test_dir_unknown, cls)):
                 X_test_unknown.append(os.path.join(test_dir_unknown, cls, img))
                 y_test_unknown.append(-1)
