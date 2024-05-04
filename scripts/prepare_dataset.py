@@ -54,7 +54,7 @@ def prepare_datasets(
                     if j >= max_user_files:
                         break
                     file_name = file.split("/")[-1]
-                    shutil.copy(file, f"{dest_test}/{i}/{file_name}")
+                    shutil.copy(file, f"{dest_test_unknown}/{i}/{file_name}")
                     sizes["test_unknown"] += 1
                 train_cls_mapping[user] = i
                 i += 1
