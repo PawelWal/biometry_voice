@@ -19,7 +19,7 @@ class VoiceVer:
         device_nbr=1,
     ):
         self.model = wespeaker.load_model('english')
-        self.model.set_gpu(1)
+        self.model.set_gpu(device_nbr)
         self.model_name = "wespeaker"
         self.backbone = backbone
         self.decision_th = decision_th
