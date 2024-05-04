@@ -3,6 +3,7 @@ import json
 import shutil
 import click
 from sklearn.model_selection import train_test_split
+import random
 
 
 BASE_DIR = "/mnt/data/bwalkow/voxceleb/vox2"
@@ -19,6 +20,7 @@ def prepare_datasets(
     ds_name="test_aac",
     train_ratio=0.6,
     dev_ratio=0.2,
+    max_user_files
 ):
     dataset_dir=f"{BASE_DIR}/{ds_name}"
     dest_train = f"{SAVE_DIR}/train"
@@ -54,6 +56,9 @@ def prepare_datasets(
             # split
             train_files, test_files = train_test_split(files, test_size=1-train_ratio)
             dev_files, test_files = train_test_split(test_files, test_size=dev_ratio/(1-train_ratio))
+            train_files = random.sample(train_files, min(len(train_files), max_user_files))
+            dev_files = random.sample(dev_files, min(len(dev_files), max_user_files))
+            test_files = random.sample(test_files, min(len(test_files), max_user_files))
             sizes["train"] += len(train_files)
             sizes["test"] += len(test_files)
             sizes["dev"] += len(dev_files)
@@ -88,11 +93,13 @@ def prepare_datasets(
 @click.option("--ds_name", default="test_aac", help="Dataset name")
 @click.option("--train_ratio", default=0.6, help="Train ratio")
 @click.option("--dev_ratio", default=0.2, help="Dev ratio")
+@click.option("--max_user_files", default=10, help="Max files per user")
 def main(
     test_new_users=10,
     ds_name="test_aac",
     train_ratio=0.6,
     dev_ratio=0.2,
+    max_user_files=15,
 ):
     # test_aac
     prepare_datasets(
@@ -100,6 +107,7 @@ def main(
         ds_name,
         train_ratio,
         dev_ratio,
+        max_user_files
     )
 
 
