@@ -23,7 +23,7 @@ def main(
     exclude_unknown=False
 ):
     test_dir = os.path.join(data_dir, "test_known")
-    test_dir_unknown = os.path.join(data_dir, "test_unkown")
+    test_dir_unknown = os.path.join(data_dir, "test_unknown")
     dev_dir = os.path.join(data_dir, "dev_known")
     dev_dir_unknown = os.path.join(data_dir, "dev_unknown")
     train_dir = os.path.join(data_dir, "train")
