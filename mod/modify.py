@@ -3,6 +3,7 @@ from enum import Enum
 
 import click
 import librosa
+import random
 import numpy as np
 import soundfile as sf
 from tqdm import tqdm
@@ -12,6 +13,7 @@ class TransformationType(Enum):
     FREQUENCY = "frequency"
     NOISE = "noise"
     IRREGULAR_NOISE = "irregular-noise"
+    AMPLITUDE = "amplitude"
 
 
 class Modification():
@@ -32,7 +34,8 @@ class Modification():
 MODS = {
     TransformationType.FREQUENCY: [Modification("scale", 0.5), Modification("scale", 0.2), Modification("scale", 0.1)],
     TransformationType.NOISE: [Modification("avg", 0, 1), Modification("avg", 0, 10), Modification("avg", 5, 1)],
-    TransformationType.IRREGULAR_NOISE: [Modification("irregular", "dog_bark")]
+    TransformationType.IRREGULAR_NOISE: [Modification("irregular", "dog_bark")],
+    TransformationType.AMPLITUDE: [Modification("amplitude", "randomly_chosen")]
 }
 
 
@@ -88,6 +91,18 @@ class IrregularNoiseTransformation(Transformation):
     def __repr__(self) -> str:
         return self.__str__()
 
+class AmplitudeTransformation(Transformation):
+    def transform(self, y, sr):
+        amplitude_factor = random.choice([25, 1, 0.04])
+        print(f"Changing amplitude with {amplitude_factor} factor")
+        y = y * amplitude_factor
+        return y, sr
+    
+    def __str__(self) -> str:
+        return TransformationType.AMPLITUDE.value
+
+    def __repr__(self) -> str:
+        return self.__str__()
 
 def file_generator(dir_path):
     for root, _, files in os.walk(dir_path):
@@ -111,6 +126,9 @@ def modify(data_dir, transfomation_type, output_dir):
                     y, sr = th.transform(y, sr, mod.value_1, mod.value_2)
                 elif transfomation_type == TransformationType.IRREGULAR_NOISE:
                     th = IrregularNoiseTransformation()
+                    y, sr = th.transform(y, sr)
+                elif transfomation_type = TransformationType.AMPLITUDE:
+                    th = AmplitudeTransformation()
                     y, sr = th.transform(y, sr)
                 else:
                     print("Unknown transformation")
