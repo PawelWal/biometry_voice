@@ -97,7 +97,7 @@ class AmplitudeTransformation(Transformation):
         print(f"Changing amplitude with {amplitude_factor} factor")
         y = y * amplitude_factor
         return y, sr
-    
+
     def __str__(self) -> str:
         return TransformationType.AMPLITUDE.value
 
@@ -127,7 +127,7 @@ def modify(data_dir, transfomation_type, output_dir):
                 elif transfomation_type == TransformationType.IRREGULAR_NOISE:
                     th = IrregularNoiseTransformation()
                     y, sr = th.transform(y, sr)
-                elif transfomation_type = TransformationType.AMPLITUDE:
+                elif transfomation_type == TransformationType.AMPLITUDE:
                     th = AmplitudeTransformation()
                     y, sr = th.transform(y, sr)
                 else:
