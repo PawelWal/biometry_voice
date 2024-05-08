@@ -16,12 +16,14 @@ def count_metrics(
     dev_dir,
     dev_dir_unknown,
     batch_size=24,
+    name=None
 ):
     y_proba_unknown = []
     X_test, X_test_unknown, y_test, y_test_unknown = [], [], [], []
-    name = test_dir.split("/")[-2]
     classifier = app.classifier_name
-    name = name if test_dir_unknown is not None else f"{name}_unknown_excluded"
+    if name is None:
+        name = test_dir.split("/")[-2]
+        name = name if test_dir_unknown is not None else f"{name}_unknown_excluded"
     print(f"Testing {name} directory...")
     for cls in tqdm(os.listdir(test_dir), desc="test known"):
         for img in os.listdir(os.path.join(test_dir, cls)):
