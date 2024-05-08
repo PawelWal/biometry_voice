@@ -139,7 +139,7 @@ def modify(data_dir, transfomation_type, output_dir):
             if not os.path.exists(os.path.dirname(output_file)):
                 os.makedirs(os.path.dirname(output_file))
             print(f"Writing to {output_file}")
-            sf.write(output_file, y, sr)
+            sf.write(output_file, y, sr, format='WAV')
 
 
 @click.command()
