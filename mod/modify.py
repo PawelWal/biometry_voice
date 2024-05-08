@@ -53,7 +53,7 @@ class Transformation:
 class FrequencyTransformation(Transformation):
     def transform(self, y, sr, scale_factor=0.5):
         new_sr = int(sr * scale_factor)
-        print(f"Resampling from {sr} to {new_sr}")
+        # print(f"Resampling from {sr} to {new_sr}")
         y = librosa.resample(y, orig_sr=sr, target_sr=new_sr)
         return y, new_sr
 
@@ -94,7 +94,7 @@ class IrregularNoiseTransformation(Transformation):
 class AmplitudeTransformation(Transformation):
     def transform(self, y, sr):
         amplitude_factor = random.choice([25, 1, 0.04])
-        print(f"Changing amplitude with {amplitude_factor} factor")
+        # print(f"Changing amplitude with {amplitude_factor} factor")
         y = y * amplitude_factor
         return y, sr
 
@@ -138,7 +138,7 @@ def modify(data_dir, transfomation_type, output_dir):
             output_file = os.path.join(output_dir, str(th), str(mod), rel_path)
             if not os.path.exists(os.path.dirname(output_file)):
                 os.makedirs(os.path.dirname(output_file))
-            print(f"Writing to {output_file}")
+            # print(f"Writing to {output_file}")
             sf.write(output_file, y, sr, format='WAV')
 
 
