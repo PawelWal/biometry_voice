@@ -58,7 +58,8 @@ def run_exp(
                 None,
                 dev_dir,
                 dev_dir_unknown,
-                batch_size=48
+                batch_size=48,
+                name=adv_dir
             )
         else:
             test_on_dir(
