@@ -8,6 +8,8 @@ import numpy as np
 import soundfile as sf
 from tqdm import tqdm
 
+import warnings
+warnings.filterwarnings('ignore')
 
 class TransformationType(Enum):
     FREQUENCY = "frequency"
