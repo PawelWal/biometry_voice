@@ -107,14 +107,16 @@ class AmplitudeTransformation(Transformation):
         return self.__str__()
 
 def file_generator(dir_path):
+    files = []
     for root, _, files in os.walk(dir_path):
         for name in files:
             root_path = os.path.join(root, name)
-            yield root_path, os.path.relpath(root_path, dir_path)
+            files.append((root_path, os.path.relpath(root_path, dir_path)))
+    return files
 
 
 def modify(data_dir, transfomation_type, output_dir):
-    for data_file, rel_path in tqdm(file_generator(data_dir)):
+    for data_file, rel_path in tqdm(file_generator(data_dir), desc="Processing files"):
         for mod in MODS[transfomation_type]:
             try:
                 y, sr = librosa.load(data_file)
