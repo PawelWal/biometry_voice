@@ -107,12 +107,12 @@ class AmplitudeTransformation(Transformation):
         return self.__str__()
 
 def file_generator(dir_path):
-    files = []
+    res = []
     for root, _, files in os.walk(dir_path):
         for name in files:
             root_path = os.path.join(root, name)
-            files.append((root_path, os.path.relpath(root_path, dir_path)))
-    return files
+            res.append((root_path, os.path.relpath(root_path, dir_path)))
+    return res
 
 
 def modify(data_dir, transfomation_type, output_dir):
