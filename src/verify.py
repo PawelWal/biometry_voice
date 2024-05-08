@@ -11,10 +11,10 @@ from tqdm import tqdm
 
 def count_metrics(
     app,
-    test_dir,
-    test_dir_unknown,
     dev_dir,
     dev_dir_unknown,
+    test_dir,
+    test_dir_unknown,
     batch_size=24,
     name=None
 ):

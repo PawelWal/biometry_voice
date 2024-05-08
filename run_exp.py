@@ -47,17 +47,17 @@ def run_exp(
         **config
     )
     app.train(train_dir)
-    test_dir = train_dir.replace("train", "test_known")
-    test_dir_unknown = train_dir.replace("train", "test_unknown")
+    dev_dir = train_dir.replace("train", "dev_known")
+    dev_dir_unknown = train_dir.replace("train", "dev_unknown")
     for adv_dir in os.listdir(mod_dirs):
-        dev_dir = os.path.join(mod_dirs, adv_dir)
+        test_dir = os.path.join(mod_dirs, adv_dir)
         if not only_clf:
             count_metrics(
                 app,
                 test_dir,
-                test_dir_unknown,
-                dev_dir,
                 None,
+                dev_dir,
+                dev_dir_unknown,
                 batch_size=48,
                 name=adv_dir
             )
