@@ -54,6 +54,9 @@ def count_metrics(
         pred_y, proba = app.identify(batch)
         y_pred.extend(pred_y)
         y_proba.extend(proba)
+        print(f"Batch {batch}")
+        print(f"Pred  {pred_y}")
+        print(f"Proba {proba}")
 
     # far calculation for impostors & frr calculation for genuine
     right_indexes = [i for i, (x, y) in enumerate(zip(y_test, y_pred)) if x == y]
@@ -126,7 +129,7 @@ def count_metrics(
             X_test.append(os.path.join(dev_dir, cls, img))
 
     if dev_dir_unknown is not None:
-        for cls in tqdm(os.listdir(dev_dir_unknown), desc="dev unknown"):
+        for cls in tqdm(os.listdir(dev_dir_unknown), desc="dev unknown")):
             for img in os.listdir(os.path.join(dev_dir_unknown, cls)):
                 X_test.append(os.path.join(dev_dir_unknown, cls, img))
                 y_test.append(-1)
