@@ -41,6 +41,7 @@ class VoiceVer:
     def train(self, train_dir):
         self.is_training = True
         X, y = [], []
+        save_path = train_dir.replace("/train", "vectors.npy")
         for cls in os.listdir(train_dir):
             for img in os.listdir(os.path.join(train_dir, cls)):
                 X.append(os.path.join(train_dir, cls, img))
@@ -48,8 +49,16 @@ class VoiceVer:
 
         assert np.array(X).shape[0] == np.array(y).shape[0] # sanity check
         start = time()
-        X_rep = self.build_representation(X, verbose=True)
-        print(f"Building representation took {time() - start}")
+
+        if os.path.exists(save_path):
+            print(f"Loading saved vectors from {save_path}")
+            with open(save_path, 'rb') as f:
+                X_rep = np.load(f)
+        else:
+            X_rep = self.build_representation(X, verbose=True)
+            with open(save_path, 'wb') as f:
+                np.save(f, X_rep)
+            print(f"Building representation took {time() - start}")
         self.X_rep = X_rep
         self.y = y
         assert np.array(X_rep).shape[0] == np.array(y).shape[0]
