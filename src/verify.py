@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import json
 import numpy as np
 from tqdm import tqdm
+from datetime import datetime
 
 
 def count_metrics(
@@ -24,6 +25,7 @@ def count_metrics(
     if name is None:
         name = test_dir.split("/")[-2]
         name = name if test_dir_unknown is not None else f"{name}_unknown_excluded"
+    name = f"{name}_{datetime.now().strftime('%Y-%m-%d_%H-%M')}"
     print(f"Testing {name} directory...")
     for cls in tqdm(os.listdir(test_dir), desc="test known"):
         for img in os.listdir(os.path.join(test_dir, cls)):
@@ -31,7 +33,7 @@ def count_metrics(
             X_test.append(os.path.join(test_dir, cls, img))
 
     if test_dir_unknown is not None:
-        for cls in tqdm(os.listdir(test_dir_unknown), desc="test unknown"   ):
+        for cls in tqdm(os.listdir(test_dir_unknown), desc="test unknown"):
             for img in os.listdir(os.path.join(test_dir_unknown, cls)):
                 X_test_unknown.append(os.path.join(test_dir_unknown, cls, img))
                 y_test_unknown.append(-1)
