@@ -120,13 +120,13 @@ def count_metrics(
         f.write(json.dumps(res_dict) + "\n")
 
     X_test, y_test = [], []
-    for cls in os.listdir(dev_dir):
+    for cls in tqdm(os.listdir(dev_dir), desc="dev known"):
         for img in os.listdir(os.path.join(dev_dir, cls)):
             y_test.append(int(cls))
             X_test.append(os.path.join(dev_dir, cls, img))
 
     if dev_dir_unknown is not None:
-        for cls in os.listdir(dev_dir_unknown):
+        for cls in tqdm(os.listdir(dev_dir_unknown), desc="dev unknown")):
             for img in os.listdir(os.path.join(dev_dir_unknown, cls)):
                 X_test.append(os.path.join(dev_dir_unknown, cls, img))
                 y_test.append(-1)
