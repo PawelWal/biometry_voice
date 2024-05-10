@@ -20,7 +20,8 @@ def prepare_datasets(
     ds_name="test_aac",
     train_ratio=0.6,
     dev_ratio=0.2,
-    max_user_files=15
+    max_user_train_files=15,
+    max_user_test_files=5
 ):
     dataset_dir=f"{BASE_DIR}/{ds_name}"
     dest_train = f"{SAVE_DIR}/train"
@@ -44,14 +45,15 @@ def prepare_datasets(
     for user in os.listdir(dataset_dir):
         files = []
         for dir in os.listdir(f"{dataset_dir}/{user}"):
-            for file in os.listdir(f"{dataset_dir}/{user}/{dir}"):
-                files.append(f"{dataset_dir}/{user}/{dir}/{file}")
+            for i, file in enumerate(os.listdir(f"{dataset_dir}/{user}/{dir}")):
+                if i == 0: # take only first dir file
+                    files.append(f"{dataset_dir}/{user}/{dir}/{file}")
 
         if user in to_test_new:
             if user in to_test_new[:test_new_users]:
                 os.makedirs(f"{dest_test_unknown}/{i}", exist_ok=True)
                 for j, file in enumerate(files):
-                    if j >= max_user_files:
+                    if j >= max_user_test_files:
                         break
                     file_name = file.split("/")[-1]
                     shutil.copy(file, f"{dest_test_unknown}/{i}/{file_name}")
@@ -61,7 +63,7 @@ def prepare_datasets(
             else: # dev unknown
                 os.makedirs(f"{dest_dev_unknown}/{i}", exist_ok=True)
                 for j, file in enumerate(files):
-                    if j >= max_user_files:
+                    if j >= max_user_test_files:
                         break
                     file_name = file.split("/")[-1]
                     shutil.copy(file, f"{dest_dev_unknown}/{i}/{file_name}")
@@ -71,9 +73,9 @@ def prepare_datasets(
             # split
             train_files, test_files = train_test_split(files, test_size=1-train_ratio)
             dev_files, test_files = train_test_split(test_files, test_size=dev_ratio/(1-train_ratio))
-            train_files = random.sample(train_files, min(len(train_files), max_user_files))
-            dev_files = random.sample(dev_files, min(len(dev_files), max_user_files))
-            test_files = random.sample(test_files, min(len(test_files), max_user_files))
+            train_files = random.sample(train_files, min(len(train_files), max_user_train_files))
+            dev_files = random.sample(dev_files, min(len(dev_files), max_user_test_files))
+            test_files = random.sample(test_files, min(len(test_files), max_user_test_files))
             sizes["train"] += len(train_files)
             sizes["test"] += len(test_files)
             sizes["dev"] += len(dev_files)
