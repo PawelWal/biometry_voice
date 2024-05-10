@@ -41,34 +41,31 @@ def prepare_datasets(
     train_cls_mapping = {}
     sizes = {"train": 0, "test": 0, "test_unknown": 0, "dev": 0, "dev_unknown": 0}
     print(f"Train: {len(to_train)}, test: {len(to_test)}, test_new: {len(to_test_new)}")
-    i = 0
     for user in os.listdir(dataset_dir):
+        user_id = int(user.split("id")[-1])
         files = []
         for dir in os.listdir(f"{dataset_dir}/{user}"):
-            for i, file in enumerate(os.listdir(f"{dataset_dir}/{user}/{dir}")):
-                if i == 0: # take only first dir file
-                    files.append(f"{dataset_dir}/{user}/{dir}/{file}")
+            filename = os.listdir(f"{dataset_dir}/{user}/{dir}")[0]
+            files.append(f"{dataset_dir}/{user}/{dir}/{filename}")
 
         if user in to_test_new:
             if user in to_test_new[:test_new_users]:
-                os.makedirs(f"{dest_test_unknown}/{i}", exist_ok=True)
+                os.makedirs(f"{dest_test_unknown}/{user_id}", exist_ok=True)
                 for j, file in enumerate(files):
                     if j >= max_user_test_files:
                         break
                     file_name = file.split("/")[-1]
-                    shutil.copy(file, f"{dest_test_unknown}/{i}/{file_name}")
+                    shutil.copy(file, f"{dest_test_unknown}/{user_id}/{file_name}")
                     sizes["test_unknown"] += 1
-                train_cls_mapping[user] = i
-                i += 1
+                train_cls_mapping[user] = user_id
             else: # dev unknown
-                os.makedirs(f"{dest_dev_unknown}/{i}", exist_ok=True)
+                os.makedirs(f"{dest_dev_unknown}/{user_id}", exist_ok=True)
                 for j, file in enumerate(files):
                     if j >= max_user_test_files:
                         break
                     file_name = file.split("/")[-1]
-                    shutil.copy(file, f"{dest_dev_unknown}/{i}/{file_name}")
+                    shutil.copy(file, f"{dest_dev_unknown}/{user_id}/{file_name}")
                     sizes["dev_unknown"] += 1
-                i += 1
         else:
             # split
             train_files, test_files = train_test_split(files, test_size=1-train_ratio)
@@ -81,19 +78,18 @@ def prepare_datasets(
             sizes["dev"] += len(dev_files)
 
             # train
-            os.makedirs(f"{dest_train}/{i}", exist_ok=True)
-            save_files(train_files, dest_train, i)
+            os.makedirs(f"{dest_train}/{user_id}", exist_ok=True)
+            save_files(train_files, dest_train, user_id)
 
             # dev
-            os.makedirs(f"{dest_dev}/{i}", exist_ok=True)
-            save_files(dev_files, dest_dev, i)
+            os.makedirs(f"{dest_dev}/{user_id}", exist_ok=True)
+            save_files(dev_files, dest_dev, user_id)
 
             # test
-            os.makedirs(f"{dest_test}/{i}", exist_ok=True)
-            save_files(test_files, dest_test, i)
+            os.makedirs(f"{dest_test}/{user_id}", exist_ok=True)
+            save_files(test_files, dest_test, user_id)
 
-            train_cls_mapping[user] = i
-            i += 1
+            train_cls_mapping[user] = user_id
 
 
     report = {
