@@ -2,6 +2,7 @@ import os
 import json
 import shutil
 import click
+from pydantic.typing import is_finalvar
 from sklearn.model_selection import train_test_split
 import random
 
@@ -11,7 +12,8 @@ SAVE_DIR = "/mnt/data/bwalkow/voxceleb/datasets"
 
 def save_files(files, dest, i):
     for file in files:
-        file_name = file.split("/")[-1]
+        fs = file.split('/')
+        file_name = fs[-2] + "_" + fs[-1]
         shutil.copy(file, f"{dest}/{i}/{file_name}")
 
 
@@ -21,7 +23,8 @@ def prepare_datasets(
     train_ratio=0.6,
     dev_ratio=0.2,
     max_user_train_files=15,
-    max_user_test_files=10
+    max_user_test_files=10,
+    only_first=True
 ):
     dataset_dir=f"{BASE_DIR}/{ds_name}"
     dest_train = f"{SAVE_DIR}/train"
@@ -45,8 +48,12 @@ def prepare_datasets(
         user_id = int(user.split("id")[-1])
         files = []
         for dir in os.listdir(f"{dataset_dir}/{user}"):
-            filename = os.listdir(f"{dataset_dir}/{user}/{dir}")[0]
-            files.append(f"{dataset_dir}/{user}/{dir}/{filename}")
+            if only_first:
+                filename = os.listdir(f"{dataset_dir}/{user}/{dir}")[0]
+                files.append(f"{dataset_dir}/{user}/{dir}/{filename}")
+            else:
+                for file in os.listdir(f"{dataset_dir}/{user}/{dir}"):
+                    files.append(f"{dataset_dir}/{user}/{dir}/{file}")
 
         if user in to_test_new:
             if user in to_test_new[:test_new_users]:
@@ -54,7 +61,8 @@ def prepare_datasets(
                 for j, file in enumerate(files):
                     if j >= max_user_test_files:
                         break
-                    file_name = file.split("/")[-1]
+                    fs = file.split('/')
+                    file_name = fs[-2] + "_" + fs[-1]
                     shutil.copy(file, f"{dest_test_unknown}/{user_id}/{file_name}")
                     sizes["test_unknown"] += 1
                 train_cls_mapping[user] = user_id
@@ -63,7 +71,8 @@ def prepare_datasets(
                 for j, file in enumerate(files):
                     if j >= max_user_test_files:
                         break
-                    file_name = file.split("/")[-1]
+                    fs = file.split('/')
+                    file_name = fs[-2] + "_" + fs[-1]
                     shutil.copy(file, f"{dest_dev_unknown}/{user_id}/{file_name}")
                     sizes["dev_unknown"] += 1
         else:
@@ -108,13 +117,15 @@ def prepare_datasets(
 @click.option("--dev_ratio", default=0.2, help="Dev ratio")
 @click.option("--max_user_train_files", default=15, help="Max files per train user")
 @click.option("--max_user_test_files", default=10, help="Max files per test user")
+@click.option("--only_first", default=True, help="Take only first file from each directory")
 def main(
     test_new_users=10,
     ds_name="test_aac",
     train_ratio=0.6,
     dev_ratio=0.2,
     max_user_train_files=15,
-    max_user_test_files=10
+    max_user_test_files=10,
+    only_first=True
 ):
     # test_aac
     prepare_datasets(
@@ -123,7 +134,8 @@ def main(
         train_ratio,
         dev_ratio,
         max_user_train_files,
-        max_user_test_files
+        max_user_test_files,
+        only_first
     )
 
 
