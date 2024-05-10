@@ -39,7 +39,7 @@ def count_metrics(
                 y_test_unknown.append(-1)
 
         y_pred_unknown, y_proba_unknown = [], []
-        for i in range(ceil(len(X_test_unknown) / batch_size)):
+        for i in tqdm(range(ceil(len(X_test_unknown) / batch_size)), desc="Test Unknown"):
             batch = X_test_unknown[
                 i * batch_size:min((i + 1) * batch_size, len(X_test_unknown))
             ]
@@ -49,7 +49,7 @@ def count_metrics(
 
     y_pred = []
     y_proba = []
-    for i in tqdm(range(ceil(len(X_test) / batch_size)), desc="Test"):
+    for i in tqdm(range(ceil(len(X_test) / batch_size)), desc="Test Known"):
         batch = X_test[
             i * batch_size:min((i + 1) * batch_size, len(X_test))
         ]
