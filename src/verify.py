@@ -129,7 +129,7 @@ def count_metrics(
             X_test.append(os.path.join(dev_dir, cls, img))
 
     if dev_dir_unknown is not None:
-        for cls in tqdm(os.listdir(dev_dir_unknown), desc="dev unknown")):
+        for cls in tqdm(os.listdir(dev_dir_unknown), desc="dev unknown"):
             for img in os.listdir(os.path.join(dev_dir_unknown, cls)):
                 X_test.append(os.path.join(dev_dir_unknown, cls, img))
                 y_test.append(-1)
