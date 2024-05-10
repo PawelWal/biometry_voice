@@ -27,13 +27,13 @@ def count_metrics(
         name = name if test_dir_unknown is not None else f"{name}_unknown_excluded"
     name = f"{name}_{datetime.now().strftime('%Y-%m-%d_%H-%M')}"
     print(f"Testing {name} directory...")
-    for cls in tqdm(os.listdir(test_dir), desc="test known"):
+    for cls in os.listdir(test_dir):
         for img in os.listdir(os.path.join(test_dir, cls)):
             y_test.append(int(cls))
             X_test.append(os.path.join(test_dir, cls, img))
 
     if test_dir_unknown is not None:
-        for cls in tqdm(os.listdir(test_dir_unknown), desc="test unknown"):
+        for cls in os.listdir(test_dir_unknown):
             for img in os.listdir(os.path.join(test_dir_unknown, cls)):
                 X_test_unknown.append(os.path.join(test_dir_unknown, cls, img))
                 y_test_unknown.append(-1)
@@ -49,7 +49,7 @@ def count_metrics(
 
     y_pred = []
     y_proba = []
-    for i in range(ceil(len(X_test) / batch_size)):
+    for i in tqdm(range(ceil(len(X_test) / batch_size)), desc="Test"):
         batch = X_test[
             i * batch_size:min((i + 1) * batch_size, len(X_test))
         ]
@@ -125,13 +125,13 @@ def count_metrics(
         f.write(json.dumps(res_dict) + "\n")
 
     X_test, y_test = [], []
-    for cls in tqdm(os.listdir(dev_dir), desc="dev known"):
+    for cls in os.listdir(dev_dir):
         for img in os.listdir(os.path.join(dev_dir, cls)):
             y_test.append(int(cls))
             X_test.append(os.path.join(dev_dir, cls, img))
 
     if dev_dir_unknown is not None:
-        for cls in tqdm(os.listdir(dev_dir_unknown), desc="dev unknown"):
+        for cls in os.listdir(dev_dir_unknown):
             for img in os.listdir(os.path.join(dev_dir_unknown, cls)):
                 X_test.append(os.path.join(dev_dir_unknown, cls, img))
                 y_test.append(-1)
@@ -139,7 +139,7 @@ def count_metrics(
     y_pred = []
 
     app.decision_th = cross_point / 100
-    for i in range(ceil(len(X_test) / batch_size)):
+    for i in tqdm(range(ceil(len(X_test) / batch_size)), desc="Dev"):
         batch = X_test[
             i * batch_size:min((i + 1) * batch_size, len(X_test))
         ]
