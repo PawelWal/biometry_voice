@@ -41,7 +41,7 @@ class VoiceVer:
     def train(self, train_dir):
         self.is_training = True
         X, y = [], []
-        save_path = train_dir.replace("/train", "vectors.npy")
+        save_path = train_dir.replace("/train", "/vectors.npy")
         print(f"Save path: {save_path}")
         for cls in os.listdir(train_dir):
             for img in os.listdir(os.path.join(train_dir, cls)):
