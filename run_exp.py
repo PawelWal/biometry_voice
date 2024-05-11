@@ -83,7 +83,7 @@ def main(
     config = {
         "backbone": "wespeaker",
         "classifier": cls,
-        "decision_th": 0.5,
+        "decision_th": 0.2,
     }
     run_exp(
         train_dir,
