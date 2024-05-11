@@ -66,11 +66,13 @@ def count_metrics(
     # far calculation for impostors & frr calculation for genuine
     right_indexes = [i for i, (x, y) in enumerate(zip(y_test, y_pred)) if x == y]
     miscls = [i for i, (x, y) in enumerate(zip(y_test, y_pred)) if x != y]
+    print(f"Mis cls {len(miscls)}, {miscls}")
     far_mis = []
     far_unknown = []
     frr = []
     threshold = []
-    for cur_threshold in range(100):
+    for cur_threshold in range(1000):
+        cur_threshold = cur_threshold / 10
         num_far_unk, num_far_mis = 0, 0
         num_frr = 0
         if test_dir_unknown is not None:
