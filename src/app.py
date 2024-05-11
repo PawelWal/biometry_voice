@@ -42,6 +42,7 @@ class VoiceVer:
         self.is_training = True
         X, y = [], []
         save_path = train_dir.replace("/train", "vectors.npy")
+        print(f"Save path: {save_path}")
         for cls in os.listdir(train_dir):
             for img in os.listdir(os.path.join(train_dir, cls)):
                 X.append(os.path.join(train_dir, cls, img))
@@ -56,6 +57,7 @@ class VoiceVer:
                 X_rep = np.load(f)
         else:
             X_rep = self.build_representation(X, verbose=True)
+            print(f"Saving vectors to {save_path}")
             with open(save_path, 'wb') as f:
                 np.save(f, X_rep)
             print(f"Building representation took {time() - start}")
