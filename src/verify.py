@@ -46,6 +46,9 @@ def count_metrics(
             pred_y, proba = app.identify(batch)
             y_proba_unknown.extend(proba)
             y_pred_unknown.extend(pred_y)
+            print(f"Batch {batch}")
+            print(f"Pred  {pred_y}")
+            print(f"Proba {proba}")
 
     y_pred = []
     y_proba = []
