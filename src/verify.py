@@ -17,7 +17,9 @@ def count_metrics(
     test_dir,
     test_dir_unknown,
     batch_size=24,
-    name=None
+    name=None,
+    test_dir_additional=None,
+    dev_dir_additional=None
 ):
     y_proba_unknown = []
     X_test, X_test_unknown, y_test, y_test_unknown = [], [], [], []
@@ -31,6 +33,13 @@ def count_metrics(
         for img in os.listdir(os.path.join(test_dir, cls)):
             y_test.append(int(cls))
             X_test.append(os.path.join(test_dir, cls, img))
+
+    if test_dir_additional is not None:
+        for cls in os.listdir(test_dir_additional):
+            if cls not in os.listdir(test_dir): # skip classes that are already in test_dir
+                for img in os.listdir(os.path.join(test_dir_additional, cls)):
+                    y_test.append(int(cls))
+                    X_test.append(os.path.join(test_dir_additional, cls, img))
 
     if test_dir_unknown is not None:
         for cls in os.listdir(test_dir_unknown):
@@ -46,9 +55,9 @@ def count_metrics(
             pred_y, proba = app.identify(batch)
             y_proba_unknown.extend(proba)
             y_pred_unknown.extend(pred_y)
-            print(f"Batch {batch}")
-            print(f"Pred  {pred_y}")
-            print(f"Proba {proba}")
+            # print(f"Batch {batch}")
+            # print(f"Pred  {pred_y}")
+            # print(f"Proba {proba}")
 
     y_pred = []
     y_proba = []
@@ -59,11 +68,12 @@ def count_metrics(
         pred_y, proba = app.identify(batch)
         y_pred.extend(pred_y)
         y_proba.extend(proba)
-        print(f"Batch {batch}")
-        print(f"Pred  {pred_y}")
-        print(f"Proba {proba}")
+        # print(f"Batch {batch}")
+        # print(f"Pred  {pred_y}")
+        # print(f"Proba {proba}")
 
     # far calculation for impostors & frr calculation for genuine
+    print(f"Testing {len(y_test)} known samples and {len(y_test_unknown)} unknown samples")
     right_indexes = [i for i, (x, y) in enumerate(zip(y_test, y_pred)) if x == y]
     miscls = [i for i, (x, y) in enumerate(zip(y_test, y_pred)) if x != y]
     print(f"Mis cls {len(miscls)}, {miscls}")
@@ -134,6 +144,13 @@ def count_metrics(
             y_test.append(int(cls))
             X_test.append(os.path.join(dev_dir, cls, img))
 
+    if dev_dir_additional is not None:
+        for cls in os.listdir(dev_dir_additional):
+            if cls not in os.listdir(dev_dir): # skip classes that are already in dev_dir
+                for img in os.listdir(os.path.join(dev_dir_additional, cls)):
+                    y_test.append(int(cls))
+                    X_test.append(os.path.join(dev_dir_additional, cls, img))
+
     if dev_dir_unknown is not None:
         for cls in os.listdir(dev_dir_unknown):
             for img in os.listdir(os.path.join(dev_dir_unknown, cls)):
@@ -142,6 +159,7 @@ def count_metrics(
 
     y_pred = []
 
+    print(f"Cls eval {len(y_test)} samples")
     app.decision_th = cross_point / 100
     for i in tqdm(range(ceil(len(X_test) / batch_size)), desc="Dev"):
         batch = X_test[
