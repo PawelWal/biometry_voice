@@ -47,8 +47,10 @@ def run_exp(
         **config
     )
     app.train(train_dir)
-    dev_dir = train_dir.replace("train", "dev_known")
-    test_dir = train_dir.replace("train", "test_known")
+    dev_dir_1 = train_dir.replace("train", "dev_known")
+    test_dir_1 = train_dir.replace("train", "test_known")
+    test_unknown = train_dir.replace("train", "test_unknown")
+    dev_unknown = train_dir.replace("train", "dev_unknown")
     for adv_dir in os.listdir(mod_dirs):
         test_dir = os.path.join(mod_dirs, adv_dir, "test_known")
         dev_dir = os.path.join(mod_dirs, adv_dir, "dev_known")
@@ -56,13 +58,13 @@ def run_exp(
             count_metrics(
                 app,
                 test_dir,
-                None,
+                test_unknown,
                 dev_dir,
-                None,
+                dev_unknown,
                 batch_size=48,
                 name=adv_dir,
-                test_dir_additional=dev_dir,
-                dev_dir_additional=test_dir
+                test_dir_additional=dev_dir_1,
+                dev_dir_additional=test_dir_1
             )
         else:
             test_on_dir(
