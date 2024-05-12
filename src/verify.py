@@ -42,22 +42,29 @@ def count_metrics(
                     X_test.append(os.path.join(test_dir_additional, cls, img))
 
     if test_dir_unknown is not None:
-        for cls in os.listdir(test_dir_unknown):
-            for img in os.listdir(os.path.join(test_dir_unknown, cls)):
-                X_test_unknown.append(os.path.join(test_dir_unknown, cls, img))
-                y_test_unknown.append(-1)
+        save_file_prob = test_dir_unknown.replace("dev_unknown", "dev_unknown_results_proba.npy")
+        save_file_pred = test_dir_unknown.replace("dev_unknown", "dev_unknown_results_pred.npy")
+        if os.path.exists(save_file_prob) and os.path.exists(save_file_pred):
+            print("Loading unknown results from file")
+            y_proba_unknown = np.load(save_file_prob)
+            y_pred_unknown = np.load(save_file_pred)
+        else:
+            for cls in os.listdir(test_dir_unknown):
+                for img in os.listdir(os.path.join(test_dir_unknown, cls)):
+                    X_test_unknown.append(os.path.join(test_dir_unknown, cls, img))
+                    y_test_unknown.append(-1)
 
-        y_pred_unknown, y_proba_unknown = [], []
-        for i in tqdm(range(ceil(len(X_test_unknown) / batch_size)), desc="Test Unknown"):
-            batch = X_test_unknown[
-                i * batch_size:min((i + 1) * batch_size, len(X_test_unknown))
-            ]
-            pred_y, proba = app.identify(batch)
-            y_proba_unknown.extend(proba)
-            y_pred_unknown.extend(pred_y)
-            # print(f"Batch {batch}")
-            # print(f"Pred  {pred_y}")
-            # print(f"Proba {proba}")
+            y_pred_unknown, y_proba_unknown = [], []
+            for i in tqdm(range(ceil(len(X_test_unknown) / batch_size)), desc="Test Unknown"):
+                batch = X_test_unknown[
+                    i * batch_size:min((i + 1) * batch_size, len(X_test_unknown))
+                ]
+                pred_y, proba = app.identify(batch)
+                y_proba_unknown.extend(proba)
+                y_pred_unknown.extend(pred_y)
+                np.save(save_file_prob, y_proba_unknown)
+                np.save(save_file_pred, y_pred_unknown)
+
 
     y_pred = []
     y_proba = []
