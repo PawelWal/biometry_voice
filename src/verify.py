@@ -61,6 +61,7 @@ def count_metrics(
 
     y_pred = []
     y_proba = []
+    print(f"Testing {len(y_test)} known samples {len(np.unique(y_test))} classes and {len(y_test_unknown)} unknown samples")
     for i in tqdm(range(ceil(len(X_test) / batch_size)), desc="Test Known"):
         batch = X_test[
             i * batch_size:min((i + 1) * batch_size, len(X_test))
@@ -73,7 +74,6 @@ def count_metrics(
         # print(f"Proba {proba}")
 
     # far calculation for impostors & frr calculation for genuine
-    print(f"Testing {len(y_test)} known samples and {len(y_test_unknown)} unknown samples")
     right_indexes = [i for i, (x, y) in enumerate(zip(y_test, y_pred)) if x == y]
     miscls = [i for i, (x, y) in enumerate(zip(y_test, y_pred)) if x != y]
     print(f"Mis cls {len(miscls)}, {miscls}")
