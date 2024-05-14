@@ -21,12 +21,13 @@ async def root_tasks():
 
 def check_file_path(file_path):
     if not os.path.exists(file_path):
-        raise HTTPException(status_code=404, detail="Image not found")
+        raise HTTPException(status_code=404, detail="File not found")
     return None
 
 def unpack_ident(resp):
     classes, probs = resp[0], resp[1]
-    return [{"class": cls, "prob": prob} for cls, prob in zip(classes, probs)]
+    print(type(classes), type(probs))
+    return [{"class": cls, "prob": prob.tolist()} for cls, prob in zip(classes, probs)]
 
 
 @router.post("/add_user/",
@@ -35,7 +36,7 @@ def unpack_ident(resp):
 def add_user(
         user: BiomUser = Body(
             example={
-                "user_dir": "./dataset/voiceceleb/train/1002"
+                "user_dir": "/mnt/data/bwalkow/vox_new_data/conv_data_joined/test_unknown/11202"
             }),
 ):
     """Adds new user to the system."""
@@ -53,17 +54,20 @@ def add_user(
 def verify_user(
         user: BiomVerify = Body(
             example={
-                "user_file": "./dataset/voiceceleb/test/200/1.wav",
+                "user_file": "/mnt/data/bwalkow/vox_new_data/conv_data_joined/test_known/11249/8uOwUEqSlRM_00003.wav",
                 "user_cls": 200
             }),
 ):
     """Verifies user."""
     check_file_path(user.user_file)
     if not voicever.is_training:
-        resp = voicever.verify(user.user_file, user.user_cls)
-        if isinstance(resp, list):
-            return resp[0]
-        return resp
+        if str(user.user_cls) in set(voicever.classes):
+            resp = voicever.verify([user.user_file], [user.user_cls])
+            if isinstance(resp, list):
+                return resp[0]
+            return resp.tolist()
+        else:
+            return f"Class {user.user_cls} not registered yet."
     else:
         return WAITING_MSG
 
@@ -73,13 +77,13 @@ def verify_user(
 def identify_user(
         user: BiomIdentify = Body(
             example={
-                "user_file": "./dataset/voiceceleb/test/200/1.wav"
+                "user_file": "/mnt/data/bwalkow/vox_new_data/conv_data_joined/test_known/11249/8uOwUEqSlRM_00003.wav"
             }),
 ):
     """Identifies user."""
     check_file_path(user.user_file)
     if not voicever.is_training:
-        resp = voicever.identify(user.user_file)
+        resp = voicever.identify([user.user_file])
         if isinstance(resp, list):
             return unpack_ident(resp[0])
         return unpack_ident(resp)
@@ -93,7 +97,7 @@ def identify_user(
 def get_files(
         user: BiomUser = Body(
             example={
-                "user_dir": "./dataset/processed_celeb_subset/test/200"
+                "user_dir": "/mnt/data/bwalkow/vox_new_data/conv_data_joined/test_known/11249"
             }),
 ):
     """Get images."""

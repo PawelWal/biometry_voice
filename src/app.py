@@ -102,8 +102,8 @@ class VoiceVer:
         for img in os.listdir(user_dir):
             X.append(os.path.join(user_dir, img))
             y.append(user_cls)
-        X_rep = self.build_representation(X)
-        self.X_rep.extend(X_rep)
+        X_rep = np.array(self.build_representation(X))
+        self.X_rep = np.concatenate((self.X_rep, X_rep))
         self.y.extend(y)
         self.__train(self.X_rep, self.y) # retrain with new user
         return user_cls
